@@ -102,9 +102,9 @@ class Yolo_loss(nn.Module):
 
         for i in range(3):
             all_anchors_grid = [(w / self.strides[i], h / self.strides[i]) for w, h in self.anchors]
-            masked_anchors = np.array([all_anchors_grid[j] for j in self.anch_masks[i]], dtype=np.float32)
-            ref_anchors = np.zeros((len(all_anchors_grid), 4), dtype=np.float32)
-            ref_anchors[:, 2:] = np.array(all_anchors_grid, dtype=np.float32)
+            masked_anchors = np.array([all_anchors_grid[j] for j in self.anch_masks[i]], dtype=float)
+            ref_anchors = np.zeros((len(all_anchors_grid), 4), dtype=float)
+            ref_anchors[:, 2:] = np.array(all_anchors_grid, dtype=float)
             ref_anchors = torch.from_numpy(ref_anchors)
             # calculate pred - xywh obj cls
             fsize = image_size // self.strides[i]
@@ -251,9 +251,9 @@ def train(model, device, config, epochs=5, batch_size=1, save_cp=True, log_step=
     n_val = len(val_dataset)
 
     train_loader = DataLoader(train_dataset, batch_size=config.batch // config.subdivisions, shuffle=True,
-                              num_workers=8, pin_memory=True, drop_last=True, collate_fn=collate)
+                              num_workers=2, pin_memory=True, drop_last=True, collate_fn=collate)
 
-    val_loader = DataLoader(val_dataset, batch_size=config.batch // config.subdivisions, shuffle=True, num_workers=8,
+    val_loader = DataLoader(val_dataset, batch_size=config.batch // config.subdivisions, shuffle=True, num_workers=2,
                             pin_memory=True, drop_last=True)
 
     writer = SummaryWriter(log_dir=config.TRAIN_TENSORBOARD_DIR,
